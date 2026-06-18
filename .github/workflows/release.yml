@@ -37,7 +37,8 @@ jobs:
               (cd dist && tar czf "${name}.tar.gz" "$bin" && rm "$bin")
             fi
           done
-          (cd dist && shasum -a 256 * > checksums.txt)
+          (cd dist && sha256sum go-mapgen_* > checksums.txt)
+          echo "=== checksums.txt ==="; cat dist/checksums.txt
           ls -la dist
 
       - name: Publish release
@@ -45,3 +46,20 @@ jobs:
         with:
           files: dist/*
           generate_release_notes: true
+          body: |
+            ## Установка
+
+            Скачай архив под свою ОС из списка ниже, распакуй и запусти `go-mapgen` — Go не нужен.
+
+            **macOS / Linux**
+            ```bash
+            tar xzf go-mapgen_*_<os>_<arch>.tar.gz
+            ./go-mapgen -path /путь/к/проекту            # отчёты json/md/html/dot
+            ./go-mapgen -path /путь/к/проекту -web        # дашборд на http://localhost:8080
+            ```
+
+            **Windows** — распакуй `.zip` и запусти `go-mapgen.exe` из PowerShell.
+
+            **Через Go:** `go install github.com/HamasakiBrain/go-mapgen@${{ github.ref_name }}`
+
+            Проверка целостности: `sha256sum -c checksums.txt`
