@@ -1,0 +1,15 @@
+# compiled binary
+/mapgen
+/go-mapgen
+
+# generated reports
+*.json
+*.html
+*.dot
+!testdata/**
+!vendor/**
+mapgen.md
+report*.md
+
+# OS / editor
+.DS_Store
