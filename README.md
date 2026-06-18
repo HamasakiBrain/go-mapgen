@@ -7,6 +7,27 @@
 **impact** («что сломается, если изменить X») и **trace** («путь вызова от A к B»),
 и рендерит интерактивный HTML-дашборд.
 
+## Установка
+
+**Вариант 1 — готовый бинарник (Go не нужен).** Скачай архив под свою ОС со
+страницы [Releases](https://github.com/HamasakiBrain/go-mapgen/releases),
+распакуй и запусти `go-mapgen`. macOS/Linux:
+
+```bash
+tar xzf go-mapgen_*_darwin_arm64.tar.gz   # подставь свою платформу
+./go-mapgen -path /путь/к/проекту -web
+```
+
+**Вариант 2 — через Go:**
+
+```bash
+go install github.com/HamasakiBrain/go-mapgen@latest
+# убедись, что $(go env GOPATH)/bin в PATH
+go-mapgen -path .
+```
+
+**Вариант 3 — из исходников** (см. «Сборка» ниже).
+
 ## Требования
 
 - Go **1.25+** (если версия старее — Go сам подтянет нужный toolchain при сборке).

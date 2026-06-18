@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test
+        run: go test ./...
+
+      - name: Smoke test on sample project
+        run: |
+          go build -o /tmp/go-mapgen .
+          /tmp/go-mapgen -path ./testdata/sample -out /tmp/out
+          /tmp/go-mapgen -path ./testdata/sample -impact Save -depth 5
+          test -f /tmp/out.html

@@ -1,0 +1,47 @@
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Cross-compile binaries
+        env:
+          CGO_ENABLED: "0"
+          VERSION: ${{ github.ref_name }}
+        run: |
+          mkdir -p dist
+          for t in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64; do
+            export GOOS=${t%/*} GOARCH=${t#*/}
+            name="go-mapgen_${VERSION}_${GOOS}_${GOARCH}"
+            bin="go-mapgen"
+            [ "$GOOS" = windows ] && bin="go-mapgen.exe"
+            echo "→ building $name"
+            go build -trimpath -ldflags "-s -w" -o "dist/$bin" .
+            if [ "$GOOS" = windows ]; then
+              (cd dist && zip -q "${name}.zip" "$bin" && rm "$bin")
+            else
+              (cd dist && tar czf "${name}.tar.gz" "$bin" && rm "$bin")
+            fi
+          done
+          (cd dist && shasum -a 256 * > checksums.txt)
+          ls -la dist
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
